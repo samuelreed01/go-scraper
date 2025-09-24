@@ -1,0 +1,11 @@
+services:
+  go_scraper:
+    build:
+      dockerfile: ./Dockerfile
+      no_cache: true
+    ports:
+      - 5000:5000
+    mem_limit: 2G
+    # cpus: 1
+    volumes:
+      - .:/usr/src/app
