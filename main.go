@@ -91,7 +91,10 @@ func handler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	port := "5000"
+	port := os.Getenv("PORT")
+	if (port == "") {
+		port = "8080"
+	}
 	log.Printf("Starting scraper server on port %s", port)
 	http.HandleFunc("/scrape", handler)
 	log.Fatal(http.ListenAndServe(":"+port, nil))
