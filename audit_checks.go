@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"net/url"
 	"regexp"
@@ -149,14 +148,11 @@ func linkWorker(
 	results chan<- string,
 ) {
 	for link := range jobs {
-		log.Printf("Checking link: %s", link)
-		// 1. Read cache (fast path)
 		linkMapMu.RLock()
 		works, existsInMap := linkMap[link]
 		linkMapMu.RUnlock()
 
 		if !existsInMap {
-			// 2. Slow path: network
 			works = isLinkAlive(link)
 
 			linkMapMu.Lock()

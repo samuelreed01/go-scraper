@@ -122,8 +122,6 @@ func Audit(startURL string, taskId string, keywords []string, checks Checks) (*A
 		chromedp.Flag("disable-translate", true),
 		chromedp.Flag("blink-settings", "imagesEnabled=false"),
 		chromedp.Flag("disable-remote-fonts", true),
-		chromedp.Flag("renderer-process-limit", 2),
-		chromedp.Flag("process-per-site", true),
 		chromedp.Flag("disable-background-timer-throttling", true),
 		chromedp.Flag("disable-renderer-backgrounding", true),
 		chromedp.Flag("disable-backgrounding-occluded-windows", true),
@@ -174,12 +172,13 @@ func Audit(startURL string, taskId string, keywords []string, checks Checks) (*A
 	// Start the worker pool
 	pool.Start(taskFunc)
 
-	pubSubClient.Subscribe(taskId, func(data PubSubMessage) {
+	unsubscribe, err := pubSubClient.Subscribe(taskId, func(data PubSubMessage) {
 		if data.Event == "cancel" {
 			// cancel whole audit
 			pool.Stop()
 		}
 	})
+	defer unsubscribe()
 
 	// Add the starting URL
 	pool.AddTask(startURL)
