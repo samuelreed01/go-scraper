@@ -116,7 +116,7 @@ func Audit(startURL string, taskId string, keywords []string, checks Checks) (*A
 	defer allocCancel()
 
 	var WORKERS int
-	num, err := strconv.Atoi(os.Getenv("PORT"))
+	num, err := strconv.Atoi(os.Getenv("CHROME_WORKERS"))
 	if err != nil {
 		WORKERS = 5
 	} else {
