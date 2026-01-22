@@ -15,7 +15,7 @@ RUN go mod download
 COPY . .
 
 # Build statically-linked binary
-RUN CGO_ENABLED=0 GOOS=linux go build -o scraper main.go
+RUN CGO_ENABLED=0 GOOS=linux go build -o scraper
 
 # Stage 2: Final image with Chromium
 FROM debian:bullseye-slim
