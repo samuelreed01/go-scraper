@@ -5,6 +5,8 @@ import (
 	"errors"
 	"fmt"
 	"net/url"
+	"os"
+	"strconv"
 	"strings"
 	"time"
 
@@ -113,8 +115,16 @@ func Audit(startURL string, taskId string, keywords []string, checks Checks) (*A
 	allocCtx, allocCancel := chromedp.NewExecAllocator(context.Background(), opts...)
 	defer allocCancel()
 
+	var WORKERS int
+	num, err := strconv.Atoi(os.Getenv("PORT"))
+	if err != nil {
+		WORKERS = 5
+	} else {
+		WORKERS = num
+	}
+
 	// Create worker pool with 10 concurrent workers
-	pool := NewWorkerPool[AuditPageResult](10)
+	pool := NewWorkerPool[AuditPageResult](WORKERS)
 
 	pagesSoFar := 0
 	keywordChannel := make(chan map[string]string, 100)
