@@ -10,6 +10,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/chromedp/cdproto/network"
 	"github.com/chromedp/chromedp"
 )
 
@@ -108,9 +109,26 @@ func Audit(startURL string, taskId string, keywords []string, checks Checks) (*A
 		chromedp.DefaultExecAllocatorOptions[:],
 		chromedp.Headless,
 		chromedp.DisableGPU,
-		chromedp.Flag("no-sandbox", true),
+		chromedp.NoSandbox,
 		chromedp.Flag("disable-dev-shm-usage", true),
 		chromedp.Flag("mute-audio", true),
+		chromedp.Flag("no-first-run", true),
+		chromedp.Flag("disable-extensions", true),
+		chromedp.Flag("disable-setuid-sandbox", true),
+		chromedp.Flag("no-zygote", true),
+		chromedp.Flag("disable-background-networking", true),
+		chromedp.Flag("disable-default-apps", true),
+		chromedp.Flag("disable-sync", true),
+		chromedp.Flag("disable-translate", true),
+		chromedp.Flag("blink-settings", "imagesEnabled=false"),
+		chromedp.Flag("disable-remote-fonts", true),
+		chromedp.Flag("renderer-process-limit", 2),
+		chromedp.Flag("process-per-site", true),
+		chromedp.Flag("disable-background-timer-throttling", true),
+		chromedp.Flag("disable-renderer-backgrounding", true),
+		chromedp.Flag("disable-backgrounding-occluded-windows", true),
+		chromedp.Flag("disable-renderer-backgrounding", true),
+		chromedp.Flag("disable-features", "BackForwardCache"),
 	)
 	allocCtx, allocCancel := chromedp.NewExecAllocator(context.Background(), opts...)
 	defer allocCancel()
@@ -333,6 +351,13 @@ func auditPage(p AuditPageParams) AuditPageResult {
 	var h1Texts []string
 
 	err := chromedp.Run(taskCtx,
+		network.Enable(),
+		network.SetBlockedURLs([]string{
+			"*.png", "*.jpg", "*.jpeg", "*.gif", "*.webp",
+			"*.svg", "*.woff", "*.woff2", "*.ttf", "*.otf",
+			"*.mp4", "*.webm",
+		}),
+
 		chromedp.Navigate(p.PageURL),
 		chromedp.WaitVisible("body", chromedp.ByQuery),
 
