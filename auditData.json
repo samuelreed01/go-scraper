@@ -1,0 +1,135 @@
+{
+  "title_multiple": {
+    "name": "Multiple &lt;title&gt; tags.",
+    "description": "We found pages with more than one &lt;title&gt; tag. Having multiple &lt;title&gt; tags can confuse search engines, making it harder for them to determine the primary focus of the page, potentially diluting its relevance for specific search queries. Each page should only have one &lt;title&gt; tag.",
+    "tableHeadings": ["page", "number of title tags"],
+    "tableData": [],
+    "priority": 0
+  },
+  "title_missing": {
+    "name": "Missing &lt;title&gt; tag.",
+    "description": "We found pages that are missing the &lt;title&gt; tag. The &lt;title&gt; tag is a primary factor that search engines use to determine the relevance and context of a webpage.",
+    "tableHeadings": ["page"],
+    "tableData": [],
+    "priority": 2
+  },
+  "title_duplicate": {
+    "name": "Duplicate &lt;title&gt; tag.",
+    "description": "We found duplicate &lt;title&gt; tags on your website. Unique &lt;title&gt; tags help search engines understand the distinct content and purpose of each page. This differentiation improves the chances of individual pages ranking well for relevant keywords and search queries.",
+    "tableHeadings": ["page", "title"],
+    "tableData": [],
+    "priority": 0
+  },
+  "title_too_short": {
+    "name": "The &lt;title&gt; tag is too short.",
+    "description": "We found &lt;title&gt; tags with fewer than 30 characters. A title longer than 30 characters allows for the inclusion of multiple keywords and phrases, which can help improve the page’s relevance for various search queries. Ideally a title tag should be between 50-60 characters to ensure it is fully displayed in search engine results.",
+    "tableHeadings": ["page", "title"],
+    "tableData": [],
+    "priority": 0
+  },
+  "title_too_long": {
+    "name": "The &lt;title&gt; tag is too long.",
+    "description": "We found &lt;title&gt; tags with more than 65 characters. A title longer than 65 characters might not be fully displayed in search engine results. Ideally a title tag should be between 50-60 characters.",
+    "tableHeadings": ["page", "title"],
+    "tableData": [],
+    "priority": 0
+  },
+  "h1_multiple": {
+    "name": "Multiple &lt;h1&gt; tags.",
+    "description": "We found pages with more than one &lt;h1&gt; tag. Having multiple &lt;h1&gt; tags can confuse search engines, making it harder for them to determine the primary focus of the page, potentially diluting its relevance for specific search queries.",
+    "tableHeadings": ["page", "number of h1 tags"],
+    "tableData": [],
+    "priority": 2
+  },
+  "h1_missing": {
+    "name": "Missing &lt;h1&gt; tag.",
+    "description": "We found web pages that are missing an &lt;h1&gt; tag. Search engines like Google use the &lt;h1&gt; tag to determine the main topic of a webpage. This will have a big impact on your rankings.",
+    "tableHeadings": ["page"],
+    "tableData": [],
+    "priority": 2
+  },
+  "h1_duplicate": {
+    "name": "Duplicate &lt;h1&gt; tag.",
+    "description": "We found duplicate &lt;h1&gt; tags on your website. Ensure that each page has a single, unique &lt;h1&gt; tag that accurately reflects the primary subject matter. This helps maintain focus and clarity both for search engines and users.",
+    "tableHeadings": ["pages", "tag"],
+    "tableData": [],
+    "priority": 2
+  },
+  "links_broken": {
+    "name": "Broken links",
+    "description": "We found broken links on your website. Search engines like Google consider broken links as a sign of poor quality or outdated content. Websites with broken links may be penalized with lower rankings in search engine results pages (SERPs).",
+    "tableHeadings": ["page", "link", "response"],
+    "tableData": [],
+    "priority": 1
+  },
+  "keywords_missing": {
+    "name": "Missing keywords",
+    "description": "Keywords you are tracking are missing on your website. Your website will never rank on keywords that don't exist. Please update your content to include the keywords listed below if they are important, or stop tracking them.",
+    "tableHeadings": ["keyword"],
+    "tableData": [],
+    "priority": 2
+  },
+  "timeout_page_load": {
+    "name": "Slow page load",
+    "description": "Some pages took over 60 seconds to load and the page audit timed out. This may be due to network issues, but if many pages timed out this may show that you need to optimize your website. Slow page loads decrease SEO rankings as well as user retention and satisfaction.",
+    "tableHeadings": ["page"],
+    "tableData": [],
+    "priority": 0
+  },
+  "meta_description_missing": {
+    "name": "Missing meta description",
+    "description": "We found pages with missing meta descriptions. While meta descriptions do not directly impact search engine rankings, they do influence click-through rates (CTR). A well-crafted meta description can make your link more appealing in search results, leading to more clicks and potentially improving overall search performance. Ideally a meta description should be 150-160 characters long.",
+    "tableHeadings": ["page"],
+    "tableData": [],
+    "priority": 0
+  },
+  "meta_description_multiple": {
+    "name": "Multiple meta descriptions",
+    "description": "We found pages with more than one meta description. Multiple meta descriptions can confuse search engines, making it difficult for them to determine the most relevant snippet to display in search results.",
+    "tableHeadings": ["page", "descriptions"],
+    "tableData": [],
+    "priority": 1
+  },
+  "meta_description_too_short": {
+    "name": "The meta description is too short.",
+    "description": "We found pages with short meta descriptions. Search engines often use the meta description as the snippet displayed in search results. A more detailed meta description can make the snippet more informative and engaging, potentially increasing click-through rates (CTR). Ideally the meta description should be between 150-160 characters.",
+    "tableHeadings": ["page", "description"],
+    "tableData": [],
+    "priority": 0
+  },
+  "meta_description_too_long": {
+    "name": "The meta description is too long.",
+    "description": "We found pages with meta descriptions that are too long. Search engines often use the meta description as the snippet displayed in search results. Search engines typically display only the first 150-160 characters of a meta description. If your meta description is too long, it will be truncated, potentially cutting off important information and making the snippet less effective.",
+    "tableHeadings": ["page", "description"],
+    "tableData": [],
+    "priority": 0
+  },
+  "image_size_too_big": {
+    "name": "Images are too large.",
+    "description": "We found images that are too large. Search engines like Google consider page loading speed as a ranking factor. Faster websites are more likely to rank higher in search engine results, driving more organic traffic to the site. We look for images that exeed 1MB, but ideally an image should never exceed 500KB.",
+    "tableHeadings": ["page", "image"],
+    "tableData": [],
+    "priority": 0
+  },
+  "image_url_broken": {
+    "name": "Broken image links.",
+    "description": "We found links to images that don't exist. Search engines like Google crawl websites to index content, including images. Consistently having broken image links can signal poor website maintenance and user experience to search engines, potentially leading to lower rankings in search results.",
+    "tableHeadings": ["page", "image"],
+    "tableData": [],
+    "priority": 2
+  },
+  "ssl_no": {
+    "name": "Missing SSL certificate.",
+    "description": "Your website is missing an SSL certificate. Google and other search engines prioritize secure websites in search results. Websites with SSL certificates tend to rank higher compared to non-secure sites. This makes SSL a positive SEO signal that can potentially improve your site's visibility and traffic.",
+    "tableHeadings": ["page"],
+    "tableData": [],
+    "priority": 1
+  },
+  "https_to_http_links": {
+    "name": "Links to insecure pages.",
+    "description": "We found insecure links on your website (http links that should be https). Using HTTPS consistently across all pages of your website sends a positive SEO signal, potentially improving your site's rankings and visibility. Search engines may penalize websites that do not use HTTPS or that have mixed content issues. Maintaining HTTPS internal links helps avoid these penalties and ensures your SEO efforts are not compromised.",
+    "tableHeadings": ["page", "link"],
+    "tableData": [],
+    "priority": 1
+  }
+}

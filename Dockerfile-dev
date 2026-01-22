@@ -1,0 +1,30 @@
+# Development Dockerfile for Go web scraper with chromedp
+FROM golang:1.25
+
+# Install Chromium
+RUN apt-get update && apt-get install -y chromium \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set working directory
+WORKDIR /usr/src/app
+
+# Install air for live reloading (optional but recommended)
+RUN go install github.com/air-verse/air@latest
+
+# Copy go mod files first for better caching
+COPY . .
+RUN go mod download
+
+# Create a non-root user for security
+RUN useradd -m -u 1000 devuser && chown -R devuser:devuser /usr/src/app
+USER devuser
+
+# Expose port (adjust as needed)
+EXPOSE 5000
+
+ENV GOFLAGS="-buildvcs=false"
+ENV GOOGLE_APPLICATION_CREDENTIALS="/usr/src/app/application_default_credentials.json"
+
+# Default command - can be overridden in docker-compose
+# CMD ["go", "run", "."]
+CMD ["air"]
