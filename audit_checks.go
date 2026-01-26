@@ -233,9 +233,9 @@ func isLinkAlive(url string) bool {
 	return resp.StatusCode >= 200 && resp.StatusCode < 400
 }
 
-func checkKeywords(pageURL string, content string, keywords []string, keywordChannel chan map[string]string) {
+func checkKeywords(content string, keywords []string, keywordMap map[string]int) {
 	for _, keywordPhrase := range keywords {
-		keywordArray := strings.Split(keywordPhrase, " ")
+		keywordArray := strings.Fields(keywordPhrase)
 
 		matchExists := true
 		for _, keyword := range keywordArray {
@@ -247,7 +247,7 @@ func checkKeywords(pageURL string, content string, keywords []string, keywordCha
 		}
 
 		if matchExists {
-			keywordChannel <- map[string]string{pageURL: keywordPhrase}
+			keywordMap[keywordPhrase]++
 		}
 	}
 }

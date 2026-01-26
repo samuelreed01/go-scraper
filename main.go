@@ -33,6 +33,15 @@ func scrapeHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// w.Header().Set("Content-Type", "text/plain")
+	// flusher, ok := w.(http.Flusher)
+	// if !ok {
+	// 	http.Error(w, "Streaming unsupported", http.StatusInternalServerError)
+	// 	return
+	// }
+	// w.Write([]byte("chunk 1"))
+	// flusher.Flush()
+
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(result)
 }
@@ -99,6 +108,6 @@ func main() {
 	}
 	log.Printf("Starting scraper server on port %s", port)
 	http.HandleFunc("/scrape", scrapeHandler)
-	http.HandleFunc("/audit", auditHandler)
+	http.HandleFunc("/audit", auditListHandler)
 	log.Fatal(http.ListenAndServe(":"+port, nil))
 }
