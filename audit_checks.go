@@ -174,8 +174,8 @@ func checkBrokenLinks(pageURL string, links []string) map[WarningType][]string {
 
 	var wg sync.WaitGroup
 
-	// Spawn 3 workers
-	for range 3 {
+	// Spawn 5 workers
+	for range 5 {
 		wg.Go(func() {
 			linkWorker(jobs, results)
 		})

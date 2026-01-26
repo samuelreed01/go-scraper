@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"math"
 	"net/http"
 	"os"
 	"strconv"
@@ -151,16 +150,17 @@ func auditListHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func divideUrls(urls []string, n int) [][]string {
+	base := len(urls) / n
 	remainder := len(urls) % n
 	output := make([][]string, n)
 	startAt := 0
 
-	for index := range urls {
-		count := int(math.Floor(float64(len(urls)) / float64(n)))
-		if index < remainder {
-			count += 1
+	for i := range n {
+		count := base
+		if i < remainder {
+			count++
 		}
-		output[index] = urls[startAt : startAt+int(count)]
+		output[i] = urls[startAt : startAt+count]
 		startAt += count
 	}
 
