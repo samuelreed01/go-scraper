@@ -4,8 +4,11 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"math"
 	"net/http"
 	"os"
+	"strconv"
+	"sync"
 
 	"github.com/chromedp/chromedp"
 )
@@ -34,6 +37,14 @@ func auditListHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
+	}
+
+	MAX_TABS := 2
+	if os.Getenv("AUDIT_TABS") != "" {
+		num, err := strconv.Atoi(os.Getenv("AUDIT_TABS"))
+		if err == nil {
+			MAX_TABS = num
+		}
 	}
 
 	query := r.URL.Query()
@@ -75,6 +86,12 @@ func auditListHandler(w http.ResponseWriter, r *http.Request) {
 		checks = *req.Checks
 	}
 
+	flusher, ok := w.(http.Flusher)
+	if !ok {
+		http.Error(w, "Streaming unsupported!", http.StatusInternalServerError)
+		return
+	}
+
 	opts := append(
 		chromedp.DefaultExecAllocatorOptions[:],
 		chromedp.Headless,
@@ -103,20 +120,49 @@ func auditListHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "text/plain")
 
-	for _, url := range req.URLs {
-		result := AuditPage(AuditPageParams{
-			Ctx:      allocCtx,
-			PageURL:  url,
-			Keywords: keywords,
-			Checks:   checks,
-		})
+	var wg sync.WaitGroup
 
-		output, err := json.Marshal(result)
-		if err != nil {
-			http.Error(w, "Audit failed: "+err.Error(), http.StatusInternalServerError)
-			return
-		}
-		w.Write(output)
-		w.Write([]byte("___separator___"))
+	dividedUrls := divideUrls(req.URLs, MAX_TABS)
+
+	for _, urls := range dividedUrls {
+		wg.Go(func() {
+			for _, url := range urls {
+				result := AuditPage(AuditPageParams{
+					Ctx:      allocCtx,
+					PageURL:  url,
+					Keywords: keywords,
+					Checks:   checks,
+				})
+
+				output, err := json.Marshal(result)
+				if err != nil {
+					http.Error(w, "Audit failed: "+err.Error(), http.StatusInternalServerError)
+					return
+				}
+				w.Write(output)
+				w.Write([]byte("___separator___"))
+				flusher.Flush()
+			}
+		})
 	}
+
+	wg.Wait()
+	flusher.Flush()
+}
+
+func divideUrls(urls []string, n int) [][]string {
+	remainder := len(urls) % n
+	output := make([][]string, n)
+	startAt := 0
+
+	for index := range urls {
+		count := int(math.Floor(float64(len(urls)) / float64(n)))
+		if index < remainder {
+			count += 1
+		}
+		output[index] = urls[startAt : startAt+int(count)]
+		startAt += count
+	}
+
+	return output
 }
