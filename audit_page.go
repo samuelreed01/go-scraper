@@ -78,8 +78,8 @@ func AuditPage(p AuditPageParams) AuditPageResult {
 	var pageText string
 	var metaDesc string
 	var linkHrefs []string
-	var h1Texts []string
-	var keywordMatches map[string]int
+	h1Texts := make([]string, 2)
+	keywordMatches := make(map[string]int)
 
 	err := chromedp.Run(taskCtx,
 		network.Enable(),
