@@ -166,8 +166,13 @@ func linkWorker(
 	}
 }
 
-func checkBrokenLinks(pageURL string, links []string) map[WarningType][]string {
+func checkBrokenLinks(pageURL string, links []string, checked map[string]bool) map[WarningType][]string {
 	warnings := make(map[WarningType][]string)
+
+	mainUrl, err := url.Parse(pageURL)
+	if err != nil {
+		return warnings
+	}
 
 	jobs := make(chan string)
 	results := make(chan string)
@@ -190,7 +195,19 @@ func checkBrokenLinks(pageURL string, links []string) map[WarningType][]string {
 	// Feed jobs
 	go func() {
 		for _, link := range links {
-			jobs <- link
+			if strings.HasPrefix(link, "/") && !checked[link] {
+				jobs <- link
+				return
+			}
+
+			parsed, err := url.Parse(link)
+			if err != nil {
+				return
+			}
+
+			if mainUrl.Host != parsed.Host || !checked[parsed.Path] {
+				jobs <- link
+			}
 		}
 		close(jobs)
 	}()

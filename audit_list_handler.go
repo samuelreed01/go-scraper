@@ -14,20 +14,32 @@ import (
 
 // AuditRequest structure
 type AuditListRequest struct {
-	URLs     []string `json:"urls"`
-	Keywords []string `json:"keywords"`
-	Checks   *Checks  `json:"checks"`
+	URLs         []string `json:"urls"`
+	Keywords     []string `json:"keywords"`
+	Checks       *Checks  `json:"checks"`
+	CheckedPaths []string `json:"checked_paths"`
 }
 
 func (r *AuditListRequest) Validate() error {
-	if r.URLs == nil {
+	if len(r.URLs) == 0 {
 		return errors.New("url is required")
 	}
-	// if r.Keywords == nil {
-	// 	return errors.New("keywords is required")
-	// }
 	if r.Checks == nil {
-		return errors.New("checks is required")
+		r.Checks = &Checks{
+			Headings:    true,
+			Title:       true,
+			Description: true,
+			Keywords:    true,
+			Images:      false,
+			Links:       false,
+			Security:    true,
+		}
+	}
+	if r.Keywords == nil {
+		r.Keywords = []string{}
+	}
+	if r.CheckedPaths == nil {
+		r.CheckedPaths = []string{}
 	}
 	return nil
 }
@@ -62,27 +74,6 @@ func auditListHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
-	}
-
-	var keywords []string = req.Keywords
-	if keywords == nil {
-		keywords = make([]string, 0)
-	}
-
-	var checks Checks
-	if req.Checks == nil {
-		checks = Checks{
-			Lighthouse:  true,
-			Headings:    true,
-			Title:       true,
-			Description: true,
-			Keywords:    true,
-			Images:      true,
-			Links:       true,
-			Security:    true,
-		}
-	} else {
-		checks = *req.Checks
 	}
 
 	flusher, ok := w.(http.Flusher)
@@ -127,10 +118,11 @@ func auditListHandler(w http.ResponseWriter, r *http.Request) {
 		wg.Go(func() {
 			for _, url := range urls {
 				result := AuditPage(AuditPageParams{
-					Ctx:      allocCtx,
-					PageURL:  url,
-					Keywords: keywords,
-					Checks:   checks,
+					Ctx:          allocCtx,
+					PageURL:      url,
+					Keywords:     req.Keywords,
+					Checks:       *req.Checks,
+					CheckedPaths: req.CheckedPaths,
 				})
 
 				output, err := json.Marshal(result)

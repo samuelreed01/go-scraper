@@ -39,10 +39,11 @@ var pageExtensions = map[string]bool{
 }
 
 type AuditPageParams struct {
-	Ctx      context.Context
-	PageURL  string
-	Keywords []string
-	Checks   Checks
+	Ctx          context.Context
+	PageURL      string
+	Keywords     []string
+	Checks       Checks
+	CheckedPaths []string
 }
 
 // AuditPageResult combines page info and discovered links
@@ -140,7 +141,14 @@ func AuditPage(p AuditPageParams) AuditPageResult {
 		mergeWarnings(allWarnings, checkDescription(metaDesc, p.PageURL))
 	}
 	if p.Checks.Links {
-		mergeWarnings(allWarnings, checkBrokenLinks(p.PageURL, linkHrefs))
+		checkedPathsMap := make(map[string]bool)
+		if p.CheckedPaths != nil {
+			for _, checkedPath := range p.CheckedPaths {
+				checkedPathsMap[checkedPath] = true
+			}
+		}
+
+		mergeWarnings(allWarnings, checkBrokenLinks(p.PageURL, linkHrefs, checkedPathsMap))
 	}
 	if p.Checks.Security {
 		mergeWarnings(allWarnings, checkLinkProtocol(linkHrefs, p.PageURL))
