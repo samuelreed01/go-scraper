@@ -110,6 +110,7 @@ func auditListHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "text/plain")
 
+	results := make(chan AuditPageResult)
 	var wg sync.WaitGroup
 
 	dividedUrls := divideUrls(req.URLs, MAX_TABS)
@@ -117,6 +118,12 @@ func auditListHandler(w http.ResponseWriter, r *http.Request) {
 	for _, urls := range dividedUrls {
 		wg.Go(func() {
 			for _, url := range urls {
+				select {
+				case <-r.Context().Done():
+					return
+				default:
+				}
+
 				result := AuditPage(AuditPageParams{
 					Ctx:          allocCtx,
 					PageURL:      url,
@@ -124,21 +131,33 @@ func auditListHandler(w http.ResponseWriter, r *http.Request) {
 					Checks:       *req.Checks,
 					CheckedPaths: req.CheckedPaths,
 				})
-
-				output, err := json.Marshal(result)
-				if err != nil {
-					http.Error(w, "Audit failed: "+err.Error(), http.StatusInternalServerError)
-					return
-				}
-				w.Write(output)
-				w.Write([]byte("___separator___"))
-				flusher.Flush()
+				results <- result
 			}
 		})
 	}
 
+	// writer (single goroutine)
+	go func() {
+		defer close(results)
+
+		for result := range results {
+			output, err := json.Marshal(result)
+			if err != nil {
+				http.Error(w, "Audit failed: "+err.Error(), http.StatusInternalServerError)
+			}
+
+			if _, err := w.Write(output); err != nil {
+				return
+			}
+			if _, err := w.Write([]byte("___separator___")); err != nil {
+				return
+			}
+
+			flusher.Flush()
+		}
+	}()
+
 	wg.Wait()
-	flusher.Flush()
 }
 
 func divideUrls(urls []string, n int) [][]string {
