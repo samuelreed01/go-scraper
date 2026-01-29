@@ -10,6 +10,7 @@ import (
 
 // Response structure
 type ScrapeResult struct {
+	Url        string `json:"url"`
 	Text       string `json:"text"`
 	Images     int    `json:"images"`
 	Heading    int    `json:"headings"`
@@ -56,6 +57,7 @@ func Scrape(url string, parentCtx context.Context) (*ScrapeResult, error) {
 	wordCount := len(strings.Fields(pageText))
 
 	return &ScrapeResult{
+		Url:        url,
 		Text:       pageText,
 		Images:     imgCount,
 		Heading:    headingsCount,
