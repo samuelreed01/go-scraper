@@ -18,7 +18,7 @@ COPY . .
 RUN CGO_ENABLED=0 GOOS=linux go build -o scraper
 
 # Stage 2: Final image with Chromium
-FROM debian:bullseye-slim
+FROM debian:stable-slim
 
 # # Install necessary packages for headless Chromium
 # RUN apt-get update && apt-get install -y \
