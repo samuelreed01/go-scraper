@@ -108,7 +108,9 @@ func auditListHandler(w http.ResponseWriter, r *http.Request) {
 	allocCtx, allocCancel := chromedp.NewExecAllocator(context.Background(), opts...)
 	defer allocCancel()
 
-	w.Header().Set("Content-Type", "text/plain")
+	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
+	w.Header().Set("Cache-Control", "no-cache")
+	w.Header().Set("Connection", "keep-alive")
 
 	results := make(chan AuditPageResult)
 	var wg sync.WaitGroup
