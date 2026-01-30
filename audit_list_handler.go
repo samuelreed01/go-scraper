@@ -82,6 +82,13 @@ func auditListHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
+	w.Header().Set("Cache-Control", "no-cache")
+	w.Header().Set("Connection", "keep-alive")
+
+	w.Write([]byte(" "))
+	flusher.Flush()
+
 	opts := append(
 		chromedp.DefaultExecAllocatorOptions[:],
 		chromedp.Headless,
@@ -107,10 +114,6 @@ func auditListHandler(w http.ResponseWriter, r *http.Request) {
 	)
 	allocCtx, allocCancel := chromedp.NewExecAllocator(context.Background(), opts...)
 	defer allocCancel()
-
-	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
-	w.Header().Set("Cache-Control", "no-cache")
-	w.Header().Set("Connection", "keep-alive")
 
 	results := make(chan AuditPageResult)
 	var wg sync.WaitGroup
@@ -138,28 +141,26 @@ func auditListHandler(w http.ResponseWriter, r *http.Request) {
 		})
 	}
 
-	// writer (single goroutine)
 	go func() {
-		defer close(results)
-
-		for result := range results {
-			output, err := json.Marshal(result)
-			if err != nil {
-				http.Error(w, "Audit failed: "+err.Error(), http.StatusInternalServerError)
-			}
-
-			if _, err := w.Write(output); err != nil {
-				return
-			}
-			if _, err := w.Write([]byte("___separator___")); err != nil {
-				return
-			}
-
-			flusher.Flush()
-		}
+		wg.Wait()
+		close(results)
 	}()
 
-	wg.Wait()
+	for result := range results {
+		output, err := json.Marshal(result)
+		if err != nil {
+			http.Error(w, "Audit failed: "+err.Error(), http.StatusInternalServerError)
+		}
+
+		if _, err := w.Write(output); err != nil {
+			return
+		}
+		if _, err := w.Write([]byte("___separator___")); err != nil {
+			return
+		}
+
+		flusher.Flush()
+	}
 }
 
 func divideUrls(urls []string, n int) [][]string {
