@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"log"
 	"net/url"
 	"strings"
 	"time"
@@ -91,7 +92,9 @@ func AuditPage(p AuditPageParams) AuditPageResult {
 		}),
 
 		chromedp.Navigate(p.PageURL),
-		chromedp.WaitVisible("a[href]", chromedp.ByQuery),
+		chromedp.Poll(`document.readyState === "complete"`, nil),
+		chromedp.WaitReady("body", chromedp.ByQuery),
+		chromedp.Sleep(500*time.Millisecond),
 
 		chromedp.Text("body", &pageText, chromedp.NodeVisible, chromedp.ByQuery),
 
@@ -117,6 +120,7 @@ func AuditPage(p AuditPageParams) AuditPageResult {
 	)
 
 	if err != nil {
+		log.Println(p.PageURL, err)
 		return AuditPageResult{
 			Url:            p.PageURL,
 			Error:          err.Error(),
